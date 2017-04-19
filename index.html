@@ -1,91 +1,95 @@
 <html>
 <head>
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/humane-js/3.2.2/themes/flatty.css" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/humane-js/3.2.2/humane.js"></script>
+    <script>
+        humane.timeout = 3500;
+        humane.error = humane.spawn({ addnCls: 'humane-flatty-error'});
+        window.onerror = function(msg, url, linenumber) {
+            // Tell users when errors occur
+            // http://stackoverflow.com/questions/2604976/javascript-how-to-display-script-errors-in-a-popup-alert/2604997#2604997
+            humane.error("An error: " + msg);
 
-        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/humane-js/3.2.2/themes/flatty.css" />
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/humane-js/3.2.2/humane.js"></script>
-        <script>
-            humane.timeout = 3500;
-            humane.error = humane.spawn({ addnCls: 'humane-flatty-error'});
-            window.onerror = function(msg, url, linenumber) {
-                // Tell users when errors occur
-                // http://stackoverflow.com/questions/2604976/javascript-how-to-display-script-errors-in-a-popup-alert/2604997#2604997
-                humane.error("An error: " + msg);
+            // `false` to report on dev console too
+            return false;
+        };
+        function error(msg) {
+            humane.error(msg);
+            console.error(msg);
+        }
+    </script>
 
-                // `false` to report on dev console too
-                return false;
-            };
-            function error(msg) {
-                humane.error(msg);
-                console.error(msg);
-            }
-        </script>
-
-<style>
-    h2 {
-        font-size: 2em;
-        margin: 0;
-        text-align: center;
-    }
-    #year {
-        font-size: 4em;
-    }
-</style>
+    <style>
+        h2 {
+            font-size: 2em;
+            margin: 0;
+            text-align: center;
+        }
+        #year {
+            font-size: 8em;
+        }
+    </style>
 </head>
 <body>
     <h2>The oldest person alive was born in the year</h2>
     <h2 id="year">...</h2>
 
-    <p class="source">
+    <p class="footer">
         Based on <a href="https://en.wikipedia.org/wiki/Oldest_people#Chronological_list_of_the_oldest_known_living_person_since_1955">wikipedia<a>.
     </p>
+    <p class="footer">
+        Code for this page on <a href="https://github.com/ubershmekel/oldest">github<a>.
+    </p>
+    
 
-<script>
-    Array.prototype.max = function() {
-      return Math.max.apply(null, this);
-    };
+    <script>
+        Array.prototype.max = function() {
+          return Math.max.apply(null, this);
+        };
 
-    Array.prototype.min = function() {
-      return Math.min.apply(null, this);
-    };
+        Array.prototype.min = function() {
+          return Math.min.apply(null, this);
+        };
 
-    function handleResponse() {
-        text = this.responseText;
-        console.log('got response length: ' + text.length);
-        
-        var headerRegex = /known living person since/;
-        var sectionsAfter = text.split(headerRegex)[1];
-        var section = sectionsAfter.split('===')[0]
-        var rows = section.split('|-');
-        var lastRow = rows[rows.length - 1];
-        var years = lastRow.match(/\d{4}/g);
-        var minYear = years.min();
-        var el = document.getElementById('year');
-        el.innerHTML = minYear;
-        console.log(minYear);
-    }
+        function handleResponse() {
+            var text = this.responseText;
+            console.log('got response length: ' + text.length);
+            
+            var headerRegex = /known living person since/;
+            var sectionsAfter = text.split(headerRegex)[1];
+            var section = sectionsAfter.split('===')[0]
+            var rows = section.split('|-');
+            var lastRow = rows[rows.length - 1];
+            var years = lastRow.match(/\d{4}/g);
+            var minYear = years.min();
+            var el = document.getElementById('year');
+            el.innerHTML = minYear;
+            console.log(minYear);
+        }
 
-    function main() {
-        var xhr = new XMLHttpRequest();
-        xhr.addEventListener("load", handleResponse);
-        var url = 'https://en.wikipedia.org/w/api.php?action=query&titles=Oldest_people&prop=revisions&rvprop=content&format=json&origin=*';
-        xhr.open("GET", url);
-        xhr.send();
-        console.log("sent req to: " + url);
-    }
+        function main() {
+            var xhr = new XMLHttpRequest();
+            xhr.addEventListener("load", handleResponse);
+            var url = 'https://en.wikipedia.org/w/api.php?action=query&titles=Oldest_people&prop=revisions&rvprop=content&format=json&origin=*';
+            xhr.open("GET", url);
+            xhr.send();
+            console.log("sent req to: " + url);
+        }
 
-    window.onload = main;
-</script>
+        window.onload = main;
+    </script>
 
 
-<!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-<script>
-    (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-    function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-    e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-    e.src='https://www.google-analytics.com/analytics.js';
-    r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-    ga('create','UA-4533496-22','auto');ga('send','pageview');
-</script>
+    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+    <script>
+        (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+        function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+        e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+        e.src='https://www.google-analytics.com/analytics.js';
+        r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+        ga('create','UA-4533496-22','auto');ga('send','pageview');
+    </script>
 
 <!--
 Credits
